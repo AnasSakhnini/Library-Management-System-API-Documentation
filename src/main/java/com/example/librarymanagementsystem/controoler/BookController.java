@@ -3,6 +3,7 @@ package com.example.librarymanagementsystem.controoler;
 import com.example.librarymanagementsystem.entity.Book;
 import com.example.librarymanagementsystem.exception.CustomException;
 import com.example.librarymanagementsystem.repository.BookRepository;
+import com.example.librarymanagementsystem.service.BookService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,59 +19,40 @@ import java.util.Optional;
 @RequestMapping("/api/books")
 @Validated
 public class BookController {
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
-    public BookController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @GetMapping
     public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+        return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable("id") @NotBlank Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if(optionalBook.isEmpty()){
-            throw new CustomException("Book not found with ID: " + id);
-        }
-        return ResponseEntity.ok(optionalBook.get());
+        Book book = bookService.getBookById(id);
+        return ResponseEntity.ok(book);
     }
 
     @PostMapping
     public Book addBook(@RequestBody @Valid Book book) {
-        return bookRepository.save(book);
+        return bookService.addBook(book);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(
             @PathVariable("id") @NotBlank @NotNull @Positive(message = "ID must be a positive number") Long id,
             @RequestBody @Valid Book updatedBook) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            book.setTitle(updatedBook.getTitle());
-            book.setAuthor(updatedBook.getAuthor());
-            book.setPublicationYear(updatedBook.getPublicationYear());
-            book.setIsbn(updatedBook.getIsbn());
-            bookRepository.save(book);
-            return ResponseEntity.ok(book);
-        } else {
-                throw new CustomException("Book not found with ID: " + id);
-        }
+        Book book = bookService.updateBook(id, updatedBook);
+        return ResponseEntity.ok(book);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(
             @PathVariable("id") @Positive(message = "ID must be a positive number") @NotBlank @NotNull Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            Book book = optionalBook.get();
-            bookRepository.delete(book);
-            return ResponseEntity.noContent().build();
-        } else {
-            throw new CustomException("Book not found with ID: " + id);
-        }
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }

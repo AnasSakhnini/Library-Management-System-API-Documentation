@@ -1,11 +1,14 @@
 package com.example.librarymanagementsystem.service;
 
 import com.example.librarymanagementsystem.entity.Patron;
+import com.example.librarymanagementsystem.exception.CustomException;
 import com.example.librarymanagementsystem.repository.PatronRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatronService {
@@ -22,7 +25,11 @@ public class PatronService {
     }
 
     public Patron getPatronById(Long id) {
-        return patronRepository.findById(id).orElse(null);
+        Optional<Patron> patronOptional = patronRepository.findById(id);
+        if(patronOptional.isEmpty()){
+            throw new CustomException("Patron not found with ID: " + id);
+        }
+        return patronOptional.get();
     }
 
     public Patron addPatron(Patron patron) {
@@ -32,18 +39,26 @@ public class PatronService {
 
     public Patron updatePatron(Long id, Patron updatedPatron) {
         // Add business logic or validation if needed
-        Patron existingPatron = patronRepository.findById(id).orElse(null);
-        if (existingPatron != null) {
-            existingPatron.setName(updatedPatron.getName());
-            existingPatron.setContactInformation(updatedPatron.getContactInformation());
-            // Update other fields as needed
-            return patronRepository.save(existingPatron);
+        Optional<Patron> optionalPatron = patronRepository.findById(id);
+        if (optionalPatron.isPresent()) {
+            Patron patron = optionalPatron.get();
+            patron.setName(updatedPatron.getName());
+            patron.setContactInformation(updatedPatron.getContactInformation());
+            patron = patronRepository.save(patron);
+            return patron;
+        } else {
+            throw new CustomException("Patron not found with ID: " + id);
         }
-        return null; // or throw an exception
     }
 
     public void deletePatron(Long id) {
         // Add business logic or validation if needed
-        patronRepository.deleteById(id);
+        Optional<Patron> optionalPatron = patronRepository.findById(id);
+        if (optionalPatron.isPresent()) {
+            Patron patron = optionalPatron.get();
+            patronRepository.delete(patron);
+        } else {
+            throw new CustomException("Patron not found with ID: " + id);
+        }
     }
 }
