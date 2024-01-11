@@ -37,20 +37,21 @@ public class LoggingAspect {
     @Before("execution(* com.example.librarymanagementsystem.service.BookService.addBook(..))")
     public void logBookAddition(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
-        logger.info("Adding book: Title - {}, Author - {}", args[0], args[1]);
+        logger.info("Adding book: Title - {}, Author - {}", args);
     }
 
     @Before("execution(* com.example.librarymanagementsystem.service.BookService.updateBook(..))")
     public void logBookUpdate(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
-        logger.info("Updating book: ID - {}, Title - {}, Author - {}", args[0], args[1], args[2]);
+        logger.info("Updating book: ID - {},  Updated Book - {}", args[0], args[1]);
     }
 
-    // Add similar methods for other book-related operations
 
     @Before("execution(* com.example.librarymanagementsystem.service.PatronService.*(..))")
     public void logPatronOperation(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
         logger.info("Patron operation: {}", joinPoint.getSignature().toShortString());
+
     }
 
     @Around("execution(* com.example.librarymanagementsystem.service.PatronService.*(..))")

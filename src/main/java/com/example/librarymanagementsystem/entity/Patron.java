@@ -2,6 +2,7 @@ package com.example.librarymanagementsystem.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.List;
 public class Patron {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotBlank
     private Long id;
     @NotBlank(message = "Name is required")
     private String name;

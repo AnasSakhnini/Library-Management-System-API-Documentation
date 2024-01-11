@@ -2,7 +2,9 @@ package com.example.librarymanagementsystem.service;
 
 import com.example.librarymanagementsystem.entity.Book;
 import com.example.librarymanagementsystem.exception.CustomException;
+import com.example.librarymanagementsystem.projection.BookProjection;
 import com.example.librarymanagementsystem.repository.BookRepository;
+import com.example.librarymanagementsystem.validation.BookPartialUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,24 +21,24 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookProjection> getAllBooks() {
+        return bookRepository.getAllBy();
     }
 
-    public Book getBookById(Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
+    public BookProjection getBookById(Long id) {
+        Optional<BookProjection> optionalBook = bookRepository.getBookById(id);
         if(optionalBook.isEmpty()){
             throw new CustomException("Book not found with ID: " + id);
         }
         return optionalBook.get();
     }
 
-    public Book addBook(Book book) {
+    public void addBook(Book book) {
         // Add business logic or validation if needed
-        return bookRepository.save(book);
+        bookRepository.save(book);
     }
 
-    public Book updateBook(Long id, Book updatedBook) {
+    public void updateBook(Long id, Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();
@@ -45,12 +47,34 @@ public class BookService {
             book.setPublicationYear(updatedBook.getPublicationYear());
             book.setIsbn(updatedBook.getIsbn());
             bookRepository.save(book);
-            return book;
         } else {
             throw new CustomException("Book not found with ID: " + id);
         }
 
     }
+    public void updateBookPartially(Long id, BookPartialUpdateRequest updatedBook) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isPresent()) {
+            Book book = optionalBook.get();
+            // Update book's attributes based on the update request
+            if (updatedBook.getTitle() != null) {
+                book.setTitle(updatedBook.getTitle());
+            }
+            if (updatedBook.getAuthor() != null) {
+                book.setAuthor(updatedBook.getAuthor());
+            }
+            if (updatedBook.getPublicationYear() != null) {
+                book.setPublicationYear(updatedBook.getPublicationYear());
+            }
+            if (updatedBook.getIsbn() != null) {
+                book.setIsbn(updatedBook.getIsbn());
+            }
+            bookRepository.save(book);
+        } else {
+            throw new CustomException("Book not found with ID: " + id);
+        }
+    }
+
 
     public void deleteBook(Long id) {
         // Add business logic or validation if needed

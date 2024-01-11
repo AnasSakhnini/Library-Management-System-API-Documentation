@@ -1,16 +1,14 @@
-package com.example.librarymanagementsystem.entity;
+package com.example.librarymanagementsystem.validation;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.util.List;
-
-@Entity
 @Data
-public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BookPartialUpdateRequest {
+
     @PositiveOrZero
     private Long id;
     @NotBlank(message = "Title is required")
@@ -25,8 +23,4 @@ public class Book {
     @NotBlank(message = "ISBN must not be blank")
     @Pattern(regexp = "^\\d{13}$", message = "Invalid ISBN format. Must be a 13-digit number.")
     private String isbn;
-
-    @OneToMany(mappedBy = "book")
-    private List<Borrowing> borrowingRecords;
-
 }

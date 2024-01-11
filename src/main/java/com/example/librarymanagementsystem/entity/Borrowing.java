@@ -1,8 +1,8 @@
 package com.example.librarymanagementsystem.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -16,15 +16,23 @@ public class Borrowing {
 
     @ManyToOne
     @JoinColumn(name = "book_id")
-    @NotBlank
+    @Valid
+    @NotNull
     private Book book;
 
     @ManyToOne
     @JoinColumn(name = "patron_id")
-    @NotBlank
+    @Valid
+    @NotNull
     private Patron patron;
-    @NotNull(message = "Borrow date is required")
+
+    @PastOrPresent( message = "Borrowed date should be valid")
+    @NotNull
+//    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Local date should be yyyy-mm-dd")
     private LocalDate borrowedDate;
+
+    @PastOrPresent( message = "Return date should be valid")
+//    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Return date should be yyyy-mm-dd")
     private LocalDate returnDate;
 
 }
