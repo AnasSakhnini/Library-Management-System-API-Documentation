@@ -8,6 +8,8 @@ import com.example.librarymanagementsystem.repository.PatronRepository;
 import com.example.librarymanagementsystem.validation.BookPartialUpdateRequest;
 import com.example.librarymanagementsystem.validation.PatronPartialUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +25,11 @@ public class PatronService {
     public PatronService(PatronRepository patronRepository) {
         this.patronRepository = patronRepository;
     }
-
+    @Cacheable(value = "patrons", key = "#root.methodName")
     public List<PatronProjection> getAllPatrons() {
         return patronRepository.getAllBy();
     }
-
+    @Cacheable(value = "patrons", key = "#id")
     public PatronProjection getPatronById(Long id) {
         Optional<PatronProjection> patronOptional = patronRepository.getPatronById(id);
         if(patronOptional.isEmpty()){
@@ -35,12 +37,12 @@ public class PatronService {
         }
         return patronOptional.get();
     }
-
+    @CacheEvict(value = "patrons", allEntries = true)
     public Patron addPatron(Patron patron) {
         // Add business logic or validation if needed
         return patronRepository.save(patron);
     }
-
+    @CacheEvict(value = "patrons", key = "#id")
     public Patron updatePatron(Long id, Patron updatedPatron) {
         // Add business logic or validation if needed
         Optional<Patron> optionalPatron = patronRepository.findById(id);
@@ -54,7 +56,7 @@ public class PatronService {
             throw new CustomException("Patron not found with ID: " + id);
         }
     }
-
+    @CacheEvict(value = "patrons", key = "#id")
     public void updatePatronPartially(Long id, PatronPartialUpdateRequest updatedPatron) {
         Optional<Patron> optionalPatron = patronRepository.findById(id);
         if (optionalPatron.isPresent()) {
@@ -72,7 +74,7 @@ public class PatronService {
         }
     }
 
-
+    @CacheEvict(value = "patrons", key = "#id")
     public void deletePatron(Long id) {
         // Add business logic or validation if needed
         Optional<Patron> optionalPatron = patronRepository.findById(id);

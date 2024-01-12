@@ -36,7 +36,7 @@ public class CorsConfig {
             // Set the maximum age of the preflight request in seconds
             config.setMaxAge(3600L);
 
-            source.registerCorsConfiguration("/**", config);
+            source.registerCorsConfiguration("/api/**", config);
             return new CorsFilter(source);
         }
     }

@@ -28,11 +28,9 @@ public class Borrowing {
 
     @PastOrPresent( message = "Borrowed date should be valid")
     @NotNull
-//    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Local date should be yyyy-mm-dd")
     private LocalDate borrowedDate;
 
     @PastOrPresent( message = "Return date should be valid")
-//    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Return date should be yyyy-mm-dd")
     private LocalDate returnDate;
 
 }

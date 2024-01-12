@@ -46,3 +46,15 @@ The following API endpoints are available:
 ## Authentication
 Authentication is required to access certain API endpoints. To authenticate, include the following header in your requests:
 - `Authorization: Bearer <token>` Replace <token> with a valid authentication token.
+
+## Access Swagger UI
+After starting your Spring Boot application, you can access the Swagger UI at:
+
+http://localhost:8080/swagger-ui/index.html
+
+This URL provides a user-friendly interface for exploring and testing your API endpoints.
+
+## Access H2 Console
+when you run your Spring Boot application, and you can access the H2 console at 
+
+http://localhost:8080/h2-console 

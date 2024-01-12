@@ -17,7 +17,7 @@ public class BorrowingDto {
 
     private Long patronId;
 
-    private LocalDate borrowedDate;
+    private String borrowedDate;
 
-    private LocalDate returnDate;
+    private String returnDate;
 }

@@ -1,12 +1,14 @@
 package com.example.librarymanagementsystem.exception;
 
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
 // ApiError.java
 @Data
+@ToString
 public class ApiError {
     private HttpStatus status;
     private String message;

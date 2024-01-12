@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,48 +51,20 @@ public class ControllersAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         // Handle the HttpMessageNotReadableException, you can customize the response accordingly
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Request body is not readable: " );
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Request body should not be blank." );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({BadCredentialsException.class})
+    public ResponseEntity<Object> handleHttpMessageNotReadableException(BadCredentialsException ex) {
+        // Handle the HttpMessageNotReadableException, you can customize the response accordingly
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Credentials are not valid." );
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler
     public ResponseEntity<Object> handleException(Exception ex) {
 
         ex.printStackTrace();
-        return new ResponseEntity<>("An error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred: " + ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-//    public class NoResourceFoundException extends ServletException implements ErrorResponse {
-
-
-
-
-
-
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<Object> handleException(RuntimeException ex, WebRequest request) {
-//        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
-//        logger.error(ex.getMessage());
-//        logger.error(Arrays.toString(ex.getStackTrace()));
-//        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
-//    }
-
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-//            MethodArgumentNotValidException ex,
-//            HttpHeaders headers,
-//            HttpStatus status,
-//            WebRequest request) {
-//
-//        List<String> errors = new ArrayList<>();
-//        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-//            errors.add(error.getField() + ": " + error.getDefaultMessage());
-//        }
-//
-//        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-//            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-//        }
-//
-//        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation Errors", errors);
-//        return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
-//    }
 }
