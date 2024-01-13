@@ -5,9 +5,12 @@ import com.example.librarymanagementsystem.exception.CustomException;
 import com.example.librarymanagementsystem.projection.BookProjection;
 import com.example.librarymanagementsystem.repository.BookRepository;
 import com.example.librarymanagementsystem.validation.BookPartialUpdateRequest;
+import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +25,9 @@ public class BookService {
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
-    @Cacheable(value = "books", key = "#root.methodName")
     public List<BookProjection> getAllBooks() {
         return bookRepository.getAllBy();
     }
-    @Cacheable(value = "books", key = "#id")
     public BookProjection getBookById(Long id) {
         Optional<BookProjection> optionalBook = bookRepository.getBookById(id);
         if(optionalBook.isEmpty()){
@@ -34,12 +35,10 @@ public class BookService {
         }
         return optionalBook.get();
     }
-    @CacheEvict(value = "books", allEntries = true)
     public void addBook(Book book) {
         // Add business logic or validation if needed
         bookRepository.save(book);
     }
-    @CacheEvict(value = "books", key = "#id")
     public void updateBook(Long id, Book updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
@@ -54,7 +53,6 @@ public class BookService {
         }
 
     }
-    @CacheEvict(value = "books", key = "#id")
     public void updateBookPartially(Long id, BookPartialUpdateRequest updatedBook) {
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
@@ -77,10 +75,7 @@ public class BookService {
             throw new CustomException("Book not found with ID: " + id);
         }
     }
-    @CacheEvict(value = "books", key = "#id")
     public void deleteBook(Long id) {
-        // Add business logic or validation if needed
-        bookRepository.deleteById(id);
         Optional<Book> optionalBook = bookRepository.findById(id);
         if (optionalBook.isPresent()) {
             Book book = optionalBook.get();

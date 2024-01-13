@@ -58,3 +58,6 @@ This URL provides a user-friendly interface for exploring and testing your API e
 when you run your Spring Boot application, and you can access the H2 console at 
 
 http://localhost:8080/h2-console 
+
+## Postman
+A Postman file is provided in the project repository for testing the API endpoints : `Library Management System.postman_collection.json`

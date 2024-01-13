@@ -5,6 +5,7 @@ import com.example.librarymanagementsystem.exception.CustomException;
 import com.example.librarymanagementsystem.service.security.JwtService;
 import com.example.librarymanagementsystem.service.security.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +66,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(jwt);
+        try{
+            userEmail = jwtService.extractUserName(jwt);
+        }
+        catch (ExpiredJwtException ex){
+            response.reset();
+            ApiError body = new ApiError(HttpStatus.BAD_REQUEST,"Expired token" );
+
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(body));
+
+            return;
+        }
+
         if (StringUtils.isNotEmpty(userEmail)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails;
